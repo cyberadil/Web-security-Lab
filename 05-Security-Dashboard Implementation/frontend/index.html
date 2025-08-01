@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Dashboard - Web Security Lab</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;500&display=swap');
+        
+        :root {
+            --primary-neon: #00ff88;
+            --secondary-neon: #ff0080;
+            --accent-neon: #0080ff;
+            --warning-neon: #ffaa00;
+            --danger-neon: #ff0040;
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --bg-card: #111111;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-neon: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--accent-neon), var(--primary-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-neon);
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-neon), var(--primary-neon));
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .dashboard-card:hover {
+            border-color: var(--primary-neon);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-family: 'Orbitron', monospace;
+            color: var(--primary-neon);
+            font-size: 1.2rem;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-indicator.online {
+            background: var(--primary-neon);
+        }
+        
+        .status-indicator.warning {
+            background: var(--warning-neon);
+        }
+        
+        .status-indicator.danger {
+            background: var(--danger-neon);
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-neon);
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-darker);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-neon), var(--accent-neon));
+            transition: width 0.5s ease;
+        }
+        
+        .alert-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: var(--bg-darker);
+            border-radius: 6px;
+            border-left: 3px solid var(--warning-neon);
+        }
+        
+        .alert-item.critical {
+            border-left-color: var(--danger-neon);
+        }
+        
+        .alert-item.info {
+            border-left-color: var(--accent-neon);
+        }
+        
+        .alert-icon {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .alert-text {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        
+        .alert-time {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .scan-button {
+            background: linear-gradient(45deg, var(--accent-neon), var(--primary-neon));
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: var(--bg-dark);
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .scan-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 128, 255, 0.4);
+        }
+        
+        .scan-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .vulnerability-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .vulnerability-item {
+            background: var(--bg-darker);
+            border: 1px solid var(--border-neon);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .vuln-severity {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .vuln-severity.high {
+            background: var(--danger-neon);
+            color: var(--bg-dark);
+        }
+        
+        .vuln-severity.medium {
+            background: var(--warning-neon);
+            color: var(--bg-dark);
+        }
+        
+        .vuln-severity.low {
+            background: var(--primary-neon);
+            color: var(--bg-dark);
+        }
+        
+        .vuln-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .vuln-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            padding: 1rem 0;
+        }
+        
+        .chart-bar {
+            width: 30px;
+            background: linear-gradient(to top, var(--accent-neon), var(--primary-neon));
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: height 0.5s ease;
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Security Dashboard</h1>
+            <p>Comprehensive security monitoring and vulnerability management</p>
+        </header>
+        
+        <div class="dashboard-grid">
+            <!-- System Status -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">🔒 System Status</div>
+                    <div class="status-indicator online"></div>
+                </div>
+                <div class="metric-value" id="systemStatus">SECURE</div>
+                <div class="metric-label">Overall Security Status</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 85%"></div>
+                </div>
+                <div class="metric-label">Security Score: 85/100</div>
+            </div>
+            
+            <!-- Active Threats -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">⚠️ Active Threats</div>
+                    <div class="status-indicator warning"></div>
+                </div>
+                <div class="metric-value" id="activeThreats">3</div>
+                <div class="metric-label">Threats Detected</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 30%"></div>
+                </div>
+                <div class="metric-label">Risk Level: Medium</div>
+            </div>
+            
+            <!-- Vulnerabilities -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">🔍 Vulnerabilities</div>
+                    <div class="status-indicator danger"></div>
+                </div>
+                <div class="metric-value" id="vulnerabilities">7</div>
+                <div class="metric-label">Total Vulnerabilities</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 70%"></div>
+                </div>
+                <div class="metric-label">High: 2, Medium: 3, Low: 2</div>
+            </div>
+            
+            <!-- Security Events -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">📈 Security Events</div>
+                    <div class="status-indicator online"></div>
+                </div>
+                <div class="metric-value" id="securityEvents">1,247</div>
+                <div class="metric-label">Events Today</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 60%"></div>
+                </div>
+                <div class="metric-label">+15% from yesterday</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Real-time Alerts -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">🚨 Real-time Alerts</div>
+                    <div class="status-indicator warning"></div>
+                </div>
+                <div class="alert-list" id="alertList">
+                    <div class="alert-item critical">
+                        <div class="alert-icon">🔥</div>
+                        <div class="alert-text">SQL Injection attempt detected</div>
+                        <div class="alert-time">2m ago</div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-text">Multiple failed login attempts</div>
+                        <div class="alert-time">5m ago</div>
+                    </div>
+                    <div class="alert-item info">
+                        <div class="alert-icon">ℹ️</div>
+                        <div class="alert-text">Security scan completed</div>
+                        <div class="alert-time">10m ago</div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-icon">🔍</div>
+                        <div class="alert-text">Suspicious file upload detected</div>
+                        <div class="alert-time">15m ago</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vulnerability Scanner -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">🔍 Vulnerability Scanner</div>
+                    <div class="status-indicator online"></div>
+                </div>
+                <div class="metric-label">Last scan: 2 hours ago</div>
+                <button class="scan-button" id="scanButton" onclick="startVulnerabilityScan()">
+                    Start Security Scan
+                </button>
+                <div id="scanProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="scanProgressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="metric-label" id="scanStatus">Initializing scan...</div>
+                </div>
+            </div>
+            
+            <!-- Security Metrics Chart -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">📊 Security Metrics</div>
+                    <div class="status-indicator online"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-bar" style="height: 80px;">
+                        <div class="chart-label">Mon</div>
+                    </div>
+                    <div class="chart-bar" style="height: 120px;">
+                        <div class="chart-label">Tue</div>
+                    </div>
+                    <div class="chart-bar" style="height: 90px;">
+                        <div class="chart-label">Wed</div>
+                    </div>
+                    <div class="chart-bar" style="height: 150px;">
+                        <div class="chart-label">Thu</div>
+                    </div>
+                    <div class="chart-bar" style="height: 110px;">
+                        <div class="chart-label">Fri</div>
+                    </div>
+                    <div class="chart-bar" style="height: 70px;">
+                        <div class="chart-label">Sat</div>
+                    </div>
+                    <div class="chart-bar" style="height: 60px;">
+                        <div class="chart-label">Sun</div>
+                    </div>
+                </div>
+                <div class="metric-label">Weekly Security Events</div>
+            </div>
+        </div>
+        
+        <!-- Vulnerability Details -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-title">🔍 Vulnerability Details</div>
+                <div class="status-indicator danger"></div>
+            </div>
+            <div class="vulnerability-list" id="vulnerabilityList">
+                <div class="vulnerability-item">
+                    <div class="vuln-severity high">HIGH</div>
+                    <div class="vuln-title">SQL Injection in Login Form</div>
+                    <div class="vuln-description">The login form is vulnerable to SQL injection attacks. Input validation is missing.</div>
+                </div>
+                <div class="vulnerability-item">
+                    <div class="vuln-severity high">HIGH</div>
+                    <div class="vuln-title">Cross-Site Scripting (XSS)</div>
+                    <div class="vuln-description">User input is not properly sanitized, allowing XSS attacks through comment forms.</div>
+                </div>
+                <div class="vulnerability-item">
+                    <div class="vuln-severity medium">MEDIUM</div>
+                    <div class="vuln-title">Missing CSRF Protection</div>
+                    <div class="vuln-description">Forms lack CSRF tokens, making them vulnerable to cross-site request forgery.</div>
+                </div>
+                <div class="vulnerability-item">
+                    <div class="vuln-severity medium">MEDIUM</div>
+                    <div class="vuln-title">Weak Password Policy</div>
+                    <div class="vuln-description">Password requirements are too weak, allowing easily guessable passwords.</div>
+                </div>
+                <div class="vulnerability-item">
+                    <div class="vuln-severity low">LOW</div>
+                    <div class="vuln-title">Missing Security Headers</div>
+                    <div class="vuln-description">HTTP security headers like X-Frame-Options and CSP are not implemented.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulate real-time updates
+        function updateMetrics() {
+            const threats = Math.floor(Math.random() * 5) + 1;
+            const events = Math.floor(Math.random() * 2000) + 1000;
+            
+            document.getElementById('activeThreats').textContent = threats;
+            document.getElementById('securityEvents').textContent = events.toLocaleString();
+        }
+        
+        // Add new alerts periodically
+        function addRandomAlert() {
+            const alerts = [
+                { icon: '🔥', text: 'Brute force attack detected', severity: 'critical' },
+                { icon: '⚠️', text: 'Unusual network activity', severity: 'warning' },
+                { icon: '🔍', text: 'Malware signature detected', severity: 'critical' },
+                { icon: 'ℹ️', text: 'System update available', severity: 'info' },
+                { icon: '🛡️', text: 'Firewall rule triggered', severity: 'warning' }
+            ];
+            
+            const alert = alerts[Math.floor(Math.random() * alerts.length)];
+            const alertList = document.getElementById('alertList');
+            
+            const alertElement = document.createElement('div');
+            alertElement.className = `alert-item ${alert.severity}`;
+            alertElement.innerHTML = `
+                <div class="alert-icon">${alert.icon}</div>
+                <div class="alert-text">${alert.text}</div>
+                <div class="alert-time">now</div>
+            `;
+            
+            alertList.insertBefore(alertElement, alertList.firstChild);
+            
+            // Remove old alerts (keep only 5)
+            while (alertList.children.length > 5) {
+                alertList.removeChild(alertList.lastChild);
+            }
+        }
+        
+        // Vulnerability scan simulation
+        function startVulnerabilityScan() {
+            const button = document.getElementById('scanButton');
+            const progress = document.getElementById('scanProgress');
+            const progressBar = document.getElementById('scanProgressBar');
+            const status = document.getElementById('scanStatus');
+            
+            button.disabled = true;
+            button.textContent = 'Scanning...';
+            progress.style.display = 'block';
+            
+            const scanSteps = [
+                'Initializing scan...',
+                'Scanning for SQL injection...',
+                'Checking for XSS vulnerabilities...',
+                'Testing authentication...',
+                'Analyzing file permissions...',
+                'Checking for CSRF protection...',
+                'Scanning network ports...',
+                'Finalizing report...'
+            ];
+            
+            let currentStep = 0;
+            const scanInterval = setInterval(() => {
+                if (currentStep < scanSteps.length) {
+                    status.textContent = scanSteps[currentStep];
+                    progressBar.style.width = ((currentStep + 1) / scanSteps.length * 100) + '%';
+                    currentStep++;
+                } else {
+                    clearInterval(scanInterval);
+                    status.textContent = 'Scan completed successfully!';
+                    button.disabled = false;
+                    button.textContent = 'Start Security Scan';
+                    
+                    setTimeout(() => {
+                        progress.style.display = 'none';
+                        progressBar.style.width = '0%';
+                    }, 2000);
+                }
+            }, 800);
+        }
+        
+        // Initialize dashboard
+        setInterval(updateMetrics, 5000);
+        setInterval(addRandomAlert, 10000);
+        
+        // Update timestamps
+        setInterval(() => {
+            const alerts = document.querySelectorAll('.alert-time');
+            alerts.forEach((alert, index) => {
+                if (alert.textContent === 'now') {
+                    alert.textContent = '1m ago';
+                } else if (alert.textContent.includes('m ago')) {
+                    const minutes = parseInt(alert.textContent) + 1;
+                    alert.textContent = minutes + 'm ago';
+                }
+            });
+        }, 60000);
+        
+        // Animate chart bars
+        setTimeout(() => {
+            const bars = document.querySelectorAll('.chart-bar');
+            bars.forEach(bar => {
+                const height = Math.floor(Math.random() * 150) + 50;
+                bar.style.height = height + 'px';
+            });
+        }, 1000);
+    </script>
+</body>
+</html>

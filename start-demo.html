@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Security Lab - Demo Hub</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;500&display=swap');
+        
+        :root {
+            --primary-neon: #00ff88;
+            --secondary-neon: #ff0080;
+            --accent-neon: #0080ff;
+            --warning-neon: #ffaa00;
+            --danger-neon: #ff0040;
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --bg-card: #111111;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-neon: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-neon), var(--accent-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .demo-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-neon);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-neon), var(--accent-neon));
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .demo-card:hover {
+            border-color: var(--primary-neon);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+        }
+        
+        .demo-card h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: var(--primary-neon);
+            margin-bottom: 1rem;
+        }
+        
+        .demo-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .demo-card .features {
+            margin-bottom: 1.5rem;
+        }
+        
+        .demo-card .features li {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, var(--primary-neon), var(--accent-neon));
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: var(--bg-dark);
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .status.ready {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--primary-neon);
+            border: 1px solid var(--primary-neon);
+        }
+        
+        .status.setup {
+            background: rgba(255, 170, 0, 0.2);
+            color: var(--warning-neon);
+            border: 1px solid var(--warning-neon);
+        }
+        
+        .setup-instructions {
+            background: var(--bg-card);
+            border: 1px solid var(--border-neon);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .setup-instructions h2 {
+            font-family: 'Orbitron', monospace;
+            color: var(--warning-neon);
+            margin-bottom: 1rem;
+        }
+        
+        .setup-instructions code {
+            background: var(--bg-darker);
+            padding: 0.5rem;
+            border-radius: 4px;
+            color: var(--primary-neon);
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .setup-instructions pre {
+            background: var(--bg-darker);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        /* Professional Author Section Styling */
+        .author-section {
+            margin-top: 3rem;
+        }
+        
+        .author-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(17, 17, 17, 0.8) 100%);
+            border: 1px solid var(--border-neon);
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .author-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-neon), var(--accent-neon), var(--secondary-neon));
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .author-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 255, 136, 0.2);
+            border-color: var(--primary-neon);
+        }
+        
+        .author-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            gap: 2rem;
+        }
+        
+        .author-image-container {
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .author-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-neon);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .author-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.5);
+        }
+        
+        .author-status-ring {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary-neon);
+            border: 3px solid var(--bg-card);
+            animation: pulse-ring 2s infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
+            }
+        }
+        
+        .author-info {
+            flex: 1;
+        }
+        
+        .author-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-neon), var(--accent-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .author-title {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .author-status {
+            font-size: 0.9rem;
+            color: var(--primary-neon);
+            font-weight: 600;
+        }
+        
+        .author-details {
+            display: grid;
+            gap: 2rem;
+        }
+        
+        .author-contact {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .contact-icon {
+            font-size: 1.5rem;
+        }
+        
+        .contact-link {
+            color: var(--primary-neon);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-link:hover {
+            color: var(--accent-neon);
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        
+        .author-expertise h3,
+        .author-specialties h3,
+        .author-mission h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--accent-neon);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .expertise-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--bg-darker);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-neon);
+            transition: all 0.3s ease;
+        }
+        
+        .expertise-item:hover {
+            border-color: var(--accent-neon);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 128, 255, 0.2);
+        }
+        
+        .expertise-icon {
+            font-size: 1.5rem;
+        }
+        
+        .specialties-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        
+        .specialty-tag {
+            background: linear-gradient(45deg, var(--secondary-neon), var(--danger-neon));
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        
+        .specialty-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 128, 0.3);
+        }
+        
+        .author-mission {
+            background: rgba(0, 128, 255, 0.05);
+            border: 1px solid rgba(0, 128, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        
+        .author-mission p {
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            position: relative;
+        }
+        
+        .author-mission p::before {
+            content: '"';
+            font-size: 3rem;
+            color: var(--accent-neon);
+            position: absolute;
+            left: -1rem;
+            top: -0.5rem;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .author-mission p::after {
+            content: '"';
+            font-size: 3rem;
+            color: var(--accent-neon);
+            position: absolute;
+            right: -1rem;
+            bottom: -1rem;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .author-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+            
+            .author-card {
+                padding: 2rem;
+            }
+            
+            .author-name {
+                font-size: 1.8rem;
+            }
+            
+            .expertise-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .specialties-list {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔒 Web Security Lab</h1>
+            <p>Comprehensive educational platform for web security vulnerabilities and prevention</p>
+        </header>
+        
+        <div class="demo-grid">
+            <!-- XSS Demo -->
+            <div class="demo-card">
+                <span class="status ready">✅ Ready</span>
+                <h3>🔍 XSS Demo</h3>
+                <p>Interactive demonstration of Cross-Site Scripting vulnerabilities and prevention techniques.</p>
+                <div class="features">
+                    <ul>
+                        <li>• Real-time XSS detection</li>
+                        <li>• Vulnerable vs Secure implementations</li>
+                        <li>• Modern cybersecurity UI</li>
+                        <li>• Educational payload examples</li>
+                    </ul>
+                </div>
+                <a href="http://localhost:3000/" class="btn">Launch Demo</a>
+            </div>
+            
+            <!-- SQL Injection Demo -->
+            <div class="demo-card">
+                <span class="status ready">✅ Ready</span>
+                <h3>💉 SQL Injection Demo</h3>
+                <p>Demonstration of SQL injection vulnerabilities and secure database practices.</p>
+                <div class="features">
+                    <ul>
+                        <li>• Vulnerable authentication</li>
+                        <li>• Parameterized queries</li>
+                        <li>• Database security</li>
+                        <li>• API endpoints</li>
+                    </ul>
+                </div>
+                <a href="02-SQL-Injection-Demo Implementation/frontend/index.html" class="btn">Launch Demo</a>
+            </div>
+            
+            <!-- CSRF Demo -->
+            <div class="demo-card">
+                <span class="status ready">✅ Ready</span>
+                <h3>🔄 CSRF Demo</h3>
+                <p>Cross-Site Request Forgery protection with token-based validation.</p>
+                <div class="features">
+                    <ul>
+                        <li>• Token-based protection</li>
+                        <li>• Session management</li>
+                        <li>• Request validation</li>
+                        <li>• Middleware implementation</li>
+                    </ul>
+                </div>
+                <a href="03-CSRF-Demo Implementation/frontend/index.html" class="btn">Launch Demo</a>
+            </div>
+            
+            <!-- E-commerce Security -->
+            <div class="demo-card">
+                <span class="status ready">✅ Ready</span>
+                <h3>🛒 E-commerce Security</h3>
+                <p>Secure payment processing and data protection implementations.</p>
+                <div class="features">
+                    <ul>
+                        <li>• Secure payment processing</li>
+                        <li>• Input validation</li>
+                        <li>• Data encryption</li>
+                        <li>• PCI compliance</li>
+                    </ul>
+                </div>
+                <a href="04-E-commerce-Security Implementation/frontend/index.html" class="btn">Launch Demo</a>
+            </div>
+            
+            <!-- Security Dashboard -->
+            <div class="demo-card">
+                <span class="status ready">✅ Ready</span>
+                <h3>📊 Security Dashboard</h3>
+                <p>Comprehensive security monitoring and vulnerability scanning dashboard.</p>
+                <div class="features">
+                    <ul>
+                        <li>• Vulnerability scanning</li>
+                        <li>• Security monitoring</li>
+                        <li>• Real-time alerts</li>
+                        <li>• Security metrics</li>
+                    </ul>
+                </div>
+                <a href="05-Security-Dashboard Implementation/frontend/index.html" class="btn">Launch Demo</a>
+            </div>
+        </div>
+        
+        <div class="setup-instructions" id="setup">
+            <h2>🔧 Setup Instructions</h2>
+            
+            <h3>Quick Start (XSS Demo Only)</h3>
+            <p>The XSS demo works immediately without any setup. Simply click "Launch Demo" above!</p>
+            
+            <h3>Full Setup (All Demos)</h3>
+            <p>To run all demos with full functionality, you'll need:</p>
+            
+            <h4>1. Install Node.js</h4>
+            <p>Download and install Node.js from <a href="https://nodejs.org/" style="color: var(--primary-neon);">https://nodejs.org/</a></p>
+            
+            <h4>2. Install MySQL (Optional)</h4>
+            <p>For SQL injection demo functionality, install MySQL or MariaDB.</p>
+            
+            <h4>3. Run the Server</h4>
+            <p>After installing Node.js, run these commands:</p>
+            <pre><code># Install dependencies
+npm install
+
+# Start the server
+node server.js
+
+# Or use the PowerShell script (Windows)
+.\start-server.ps1</code></pre>
+            
+            <h4>4. Access the Demos</h4>
+            <p>Once the server is running, visit:</p>
+            <ul>
+                <li>XSS Demo: <code>http://localhost:3000/</code></li>
+                <li>Health Check: <code>http://localhost:3000/health</code></li>
+                <li>Security Info: <code>http://localhost:3000/api/security-info</code></li>
+            </ul>
+            
+            <h3>Demo Credentials</h3>
+            <p>Default demo users (if using full setup):</p>
+            <ul>
+                <li><code>admin</code> / <code>admin123</code></li>
+                <li><code>user1</code> / <code>password123</code></li>
+                <li><code>test</code> / <code>test123</code></li>
+            </ul>
+        </div>
+        
+        <div class="author-section">
+            <div class="author-card">
+                <div class="author-header">
+                    <div class="author-image-container">
+                        <img src="https://ik.imagekit.io/muzsqijq44/imageadil.jpg?updatedAt=1753952261341" alt="Mohamed Adil" class="author-image">
+                        <div class="author-status-ring"></div>
+                    </div>
+                    <div class="author-info">
+                        <h2 class="author-name">Mohamed Adil</h2>
+                        <div class="author-title">Cyber security student and Front End developer</div>
+                        <div class="author-status">🟢 Available for Consultation</div>
+                    </div>
+                </div>
+                
+                <div class="author-details">
+                    <div class="author-contact">
+                        <div class="contact-item">
+                            <span class="contact-icon">📧</span>
+                            <a href="mailto:officialadil2k5@gmail.com" class="contact-link">officialadil2k5@gmail.com</a>
+                        </div>
+                    </div>
+                    
+                    <div class="author-expertise">
+                        <h3>🎯 Areas of Expertise</h3>
+                        <div class="expertise-grid">
+                            <div class="expertise-item">
+                                <span class="expertise-icon">🔍</span>
+                                <span>Web Security</span>
+                            </div>
+                            <div class="expertise-item">
+                                <span class="expertise-icon">🛡️</span>
+                                <span>Vulnerability Assessment</span>
+                            </div>
+                            <div class="expertise-item">
+                                <span class="expertise-icon">💻</span>
+                                <span>Secure Coding</span>
+                            </div>
+                            <div class="expertise-item">
+                                <span class="expertise-icon">🔒</span>
+                                <span>Penetration Testing</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="author-specialties">
+                        <h3>🚀 Security Specializations</h3>
+                        <div class="specialties-list">
+                            <span class="specialty-tag">XSS Prevention</span>
+                            <span class="specialty-tag">SQL Injection</span>
+                            <span class="specialty-tag">CSRF Protection</span>
+                            <span class="specialty-tag">Security Testing</span>
+                            <span class="specialty-tag">Code Review</span>
+                            <span class="specialty-tag">Security Auditing</span>
+                        </div>
+                    </div>
+                    
+                    <div class="author-mission">
+                        <h3>💡 Mission</h3>
+                        <p>"Empowering developers and security professionals with practical, hands-on knowledge to build more secure web applications and protect against evolving cyber threats."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

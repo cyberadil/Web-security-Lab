@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection Demo - Web Security Lab</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;500&display=swap');
+        
+        :root {
+            --primary-neon: #00ff88;
+            --secondary-neon: #ff0080;
+            --accent-neon: #0080ff;
+            --warning-neon: #ffaa00;
+            --danger-neon: #ff0040;
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --bg-card: #111111;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-neon: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--danger-neon), var(--warning-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-neon);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .demo-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--danger-neon), var(--warning-neon));
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .demo-section h2 {
+            font-family: 'Orbitron', monospace;
+            color: var(--danger-neon);
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-darker);
+            border: 1px solid var(--border-neon);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: var(--danger-neon);
+            box-shadow: 0 0 10px rgba(255, 0, 64, 0.3);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, var(--danger-neon), var(--warning-neon));
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: var(--bg-dark);
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 0, 64, 0.4);
+        }
+        
+        .btn-secure {
+            background: linear-gradient(45deg, var(--primary-neon), var(--accent-neon));
+        }
+        
+        .btn-secure:hover {
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--bg-darker);
+            border-radius: 8px;
+            border-left: 4px solid var(--danger-neon);
+        }
+        
+        .result.secure {
+            border-left-color: var(--primary-neon);
+        }
+        
+        .warning {
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid var(--warning-neon);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .warning h3 {
+            color: var(--warning-neon);
+            margin-bottom: 0.5rem;
+        }
+        
+        pre {
+            background: var(--bg-darker);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border-neon);
+        }
+        
+        code {
+            color: var(--primary-neon);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💉 SQL Injection Demo</h1>
+            <p>Educational demonstration of SQL injection vulnerabilities and secure practices</p>
+        </header>
+        
+        <div class="warning">
+            <h3>⚠️ Educational Purpose Only</h3>
+            <p>This demo is designed for learning about SQL injection vulnerabilities. Never use these techniques on systems you don't own or without explicit permission.</p>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🔓 Vulnerable Login (Educational)</h2>
+            <p>This login form is intentionally vulnerable to SQL injection attacks for educational purposes.</p>
+            
+            <form id="vulnerableForm">
+                <div class="form-group">
+                    <label for="vuln-username">Username:</label>
+                    <input type="text" id="vuln-username" placeholder="Try: admin' OR '1'='1">
+                </div>
+                <div class="form-group">
+                    <label for="vuln-password">Password:</label>
+                    <input type="password" id="vuln-password" placeholder="Try: anything">
+                </div>
+                <button type="submit" class="btn">Login (Vulnerable)</button>
+            </form>
+            
+            <div id="vulnerableResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🔒 Secure Login</h2>
+            <p>This login form uses parameterized queries and proper security measures.</p>
+            
+            <form id="secureForm">
+                <div class="form-group">
+                    <label for="secure-username">Username:</label>
+                    <input type="text" id="secure-username" placeholder="admin">
+                </div>
+                <div class="form-group">
+                    <label for="secure-password">Password:</label>
+                    <input type="password" id="secure-password" placeholder="admin123">
+                </div>
+                <button type="submit" class="btn btn-secure">Login (Secure)</button>
+            </form>
+            
+            <div id="secureResult" class="result secure" style="display: none;"></div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📚 Common SQL Injection Payloads</h2>
+            <p>Examples of common SQL injection techniques (for educational purposes):</p>
+            
+            <pre><code>-- Authentication Bypass
+admin' OR '1'='1' --
+admin' OR '1'='1' /*
+' OR 1=1 --
+
+-- Union-based Injection
+' UNION SELECT username, password FROM users --
+
+-- Time-based Blind Injection
+admin'; WAITFOR DELAY '00:00:05' --
+
+-- Boolean-based Blind Injection
+admin' AND (SELECT COUNT(*) FROM users) > 0 --</code></pre>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🛡️ Prevention Techniques</h2>
+            <ul style="color: var(--text-secondary); line-height: 1.8;">
+                <li>• Use parameterized queries/prepared statements</li>
+                <li>• Input validation and sanitization</li>
+                <li>• Principle of least privilege for database users</li>
+                <li>• Regular security audits and code reviews</li>
+                <li>• Web Application Firewalls (WAF)</li>
+                <li>• Database activity monitoring</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Vulnerable login form
+        document.getElementById('vulnerableForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('vuln-username').value;
+            const password = document.getElementById('vuln-password').value;
+            
+            try {
+                const response = await fetch('/api/sql/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const result = await response.json();
+                const resultDiv = document.getElementById('vulnerableResult');
+                
+                resultDiv.innerHTML = `
+                    <h3>${result.success ? '✅ Login Successful' : '❌ Login Failed'}</h3>
+                    <p><strong>Message:</strong> ${result.message}</p>
+                    ${result.vulnerability ? `<p><strong>Vulnerability:</strong> ${result.vulnerability}</p>` : ''}
+                    ${result.warning ? `<p><strong>Warning:</strong> ${result.warning}</p>` : ''}
+                    ${result.user ? `<p><strong>User Data:</strong> ${JSON.stringify(result.user)}</p>` : ''}
+                `;
+                resultDiv.style.display = 'block';
+                
+            } catch (error) {
+                document.getElementById('vulnerableResult').innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>Server is running in demo mode. SQL injection demos require database connection.</p>
+                    <p>The vulnerable endpoint would normally execute: <code>SELECT * FROM users WHERE username = '${username}' AND password = '${password}'</code></p>
+                `;
+                document.getElementById('vulnerableResult').style.display = 'block';
+            }
+        });
+        
+        // Secure login form
+        document.getElementById('secureForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('secure-username').value;
+            const password = document.getElementById('secure-password').value;
+            
+            try {
+                const response = await fetch('/api/sql-secure/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const result = await response.json();
+                const resultDiv = document.getElementById('secureResult');
+                
+                resultDiv.innerHTML = `
+                    <h3>${result.success ? '✅ Login Successful' : '❌ Login Failed'}</h3>
+                    <p><strong>Message:</strong> ${result.message}</p>
+                    ${result.security ? `<p><strong>Security:</strong> ${result.security}</p>` : ''}
+                    ${result.user ? `<p><strong>User Data:</strong> ${JSON.stringify(result.user)}</p>` : ''}
+                `;
+                resultDiv.style.display = 'block';
+                
+            } catch (error) {
+                document.getElementById('secureResult').innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>Server is running in demo mode. Secure login demo requires database connection.</p>
+                    <p>The secure endpoint uses parameterized queries to prevent SQL injection.</p>
+                `;
+                document.getElementById('secureResult').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSRF Protection Demo - Web Security Lab</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;500&display=swap');
+        
+        :root {
+            --primary-neon: #00ff88;
+            --secondary-neon: #ff0080;
+            --accent-neon: #0080ff;
+            --warning-neon: #ffaa00;
+            --danger-neon: #ff0040;
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --bg-card: #111111;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-neon: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--accent-neon), var(--secondary-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-neon);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .demo-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-neon), var(--secondary-neon));
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .demo-section h2 {
+            font-family: 'Orbitron', monospace;
+            color: var(--accent-neon);
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-darker);
+            border: 1px solid var(--border-neon);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-neon);
+            box-shadow: 0 0 10px rgba(0, 128, 255, 0.3);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, var(--accent-neon), var(--secondary-neon));
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: var(--bg-dark);
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 128, 255, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, var(--danger-neon), var(--warning-neon));
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 8px 25px rgba(255, 0, 64, 0.4);
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--bg-darker);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-neon);
+        }
+        
+        .result.vulnerable {
+            border-left-color: var(--danger-neon);
+        }
+        
+        .warning {
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid var(--warning-neon);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .warning h3 {
+            color: var(--warning-neon);
+            margin-bottom: 0.5rem;
+        }
+        
+        .token-display {
+            background: var(--bg-darker);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid var(--border-neon);
+            font-family: 'Roboto Mono', monospace;
+            word-break: break-all;
+        }
+        
+        .csrf-token {
+            color: var(--primary-neon);
+            font-weight: bold;
+        }
+        
+        pre {
+            background: var(--bg-darker);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border-neon);
+        }
+        
+        code {
+            color: var(--primary-neon);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔄 CSRF Protection Demo</h1>
+            <p>Educational demonstration of Cross-Site Request Forgery attacks and protection mechanisms</p>
+        </header>
+        
+        <div class="warning">
+            <h3>⚠️ Educational Purpose Only</h3>
+            <p>This demo shows how CSRF attacks work and how to prevent them. Understanding these vulnerabilities helps build more secure applications.</p>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🔒 Protected Form (With CSRF Token)</h2>
+            <p>This form includes CSRF token protection to prevent unauthorized requests.</p>
+            
+            <div class="token-display">
+                <strong>Current CSRF Token:</strong><br>
+                <span class="csrf-token" id="csrfToken">Loading...</span>
+            </div>
+            
+            <form id="protectedForm">
+                <div class="form-group">
+                    <label for="protected-name">Name:</label>
+                    <input type="text" id="protected-name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="protected-email">Email:</label>
+                    <input type="email" id="protected-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="protected-message">Message:</label>
+                    <textarea id="protected-message" placeholder="Enter your message" required></textarea>
+                </div>
+                <input type="hidden" id="csrf-token-field" name="csrfToken">
+                <button type="submit" class="btn">Submit (Protected)</button>
+            </form>
+            
+            <div id="protectedResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🔓 Vulnerable Form (No CSRF Protection)</h2>
+            <p>This form lacks CSRF protection and is vulnerable to cross-site request forgery attacks.</p>
+            
+            <form id="vulnerableForm">
+                <div class="form-group">
+                    <label for="vuln-name">Name:</label>
+                    <input type="text" id="vuln-name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="vuln-email">Email:</label>
+                    <input type="email" id="vuln-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="vuln-message">Message:</label>
+                    <textarea id="vuln-message" placeholder="Enter your message" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-danger">Submit (Vulnerable)</button>
+            </form>
+            
+            <div id="vulnerableResult" class="result vulnerable" style="display: none;"></div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🎯 CSRF Attack Simulation</h2>
+            <p>Simulate a CSRF attack against the vulnerable endpoint:</p>
+            
+            <button id="simulateAttack" class="btn btn-danger">Simulate CSRF Attack</button>
+            <div id="attackResult" class="result vulnerable" style="display: none;"></div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📚 CSRF Attack Examples</h2>
+            <p>Common CSRF attack vectors:</p>
+            
+            <pre><code><!-- Hidden form that submits automatically -->
+&lt;form action="http://vulnerable-site.com/transfer" method="POST" style="display:none;"&gt;
+    &lt;input name="amount" value="1000"&gt;
+    &lt;input name="to" value="attacker-account"&gt;
+&lt;/form&gt;
+&lt;script&gt;document.forms[0].submit();&lt;/script&gt;
+
+<!-- Image tag with GET request -->
+&lt;img src="http://vulnerable-site.com/delete-account" style="display:none;"&gt;
+
+<!-- AJAX request from malicious site -->
+fetch('http://vulnerable-site.com/api/data', {
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({action: 'delete'})
+});</code></pre>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🛡️ CSRF Protection Methods</h2>
+            <ul style="color: var(--text-secondary); line-height: 1.8;">
+                <li>• <strong>CSRF Tokens:</strong> Unique tokens for each form/session</li>
+                <li>• <strong>SameSite Cookies:</strong> Restrict cookie sending in cross-site requests</li>
+                <li>• <strong>Referer Header Validation:</strong> Check request origin</li>
+                <li>• <strong>Custom Headers:</strong> Require custom headers for API requests</li>
+                <li>• <strong>Double Submit Cookies:</strong> Compare cookie and form token</li>
+                <li>• <strong>Origin Header Validation:</strong> Verify request origin</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        let currentCSRFToken = '';
+        
+        // Generate a mock CSRF token for demo purposes
+        function generateMockCSRFToken() {
+            return 'csrf_' + Math.random().toString(36).substr(2, 32);
+        }
+        
+        // Initialize CSRF token
+        function initCSRFToken() {
+            currentCSRFToken = generateMockCSRFToken();
+            document.getElementById('csrfToken').textContent = currentCSRFToken;
+            document.getElementById('csrf-token-field').value = currentCSRFToken;
+        }
+        
+        // Protected form submission
+        document.getElementById('protectedForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('protected-name').value,
+                email: document.getElementById('protected-email').value,
+                message: document.getElementById('protected-message').value,
+                csrfToken: document.getElementById('csrf-token-field').value
+            };
+            
+            try {
+                // Simulate protected endpoint call
+                const result = {
+                    success: true,
+                    message: 'Form submitted successfully',
+                    security: 'CSRF token validated successfully',
+                    data: formData
+                };
+                
+                const resultDiv = document.getElementById('protectedResult');
+                resultDiv.innerHTML = `
+                    <h3>✅ Protected Submission Successful</h3>
+                    <p><strong>Message:</strong> ${result.message}</p>
+                    <p><strong>Security:</strong> ${result.security}</p>
+                    <p><strong>CSRF Token:</strong> ${formData.csrfToken}</p>
+                    <p><strong>Data:</strong> ${JSON.stringify(result.data, null, 2)}</p>
+                `;
+                resultDiv.style.display = 'block';
+                
+                // Generate new token after successful submission
+                initCSRFToken();
+                
+            } catch (error) {
+                document.getElementById('protectedResult').innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>Server error occurred. In a real application, this would validate the CSRF token.</p>
+                `;
+                document.getElementById('protectedResult').style.display = 'block';
+            }
+        });
+        
+        // Vulnerable form submission
+        document.getElementById('vulnerableForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('vuln-name').value,
+                email: document.getElementById('vuln-email').value,
+                message: document.getElementById('vuln-message').value
+            };
+            
+            const resultDiv = document.getElementById('vulnerableResult');
+            resultDiv.innerHTML = `
+                <h3>⚠️ Vulnerable Submission Processed</h3>
+                <p><strong>Warning:</strong> This form lacks CSRF protection</p>
+                <p><strong>Vulnerability:</strong> Could be exploited by malicious sites</p>
+                <p><strong>Data:</strong> ${JSON.stringify(formData, null, 2)}</p>
+                <p><strong>Risk:</strong> An attacker could submit this form from their site using your session</p>
+            `;
+            resultDiv.style.display = 'block';
+        });
+        
+        // CSRF attack simulation
+        document.getElementById('simulateAttack').addEventListener('click', () => {
+            const attackData = {
+                name: 'Attacker',
+                email: 'attacker@malicious.com',
+                message: 'This is a simulated CSRF attack!',
+                source: 'External malicious website'
+            };
+            
+            const resultDiv = document.getElementById('attackResult');
+            resultDiv.innerHTML = `
+                <h3>🎯 CSRF Attack Simulated</h3>
+                <p><strong>Attack Vector:</strong> Cross-site form submission</p>
+                <p><strong>Target:</strong> Vulnerable form endpoint</p>
+                <p><strong>Payload:</strong> ${JSON.stringify(attackData, null, 2)}</p>
+                <p><strong>Result:</strong> Attack would succeed on vulnerable endpoint</p>
+                <p><strong>Prevention:</strong> CSRF tokens would block this attack</p>
+            `;
+            resultDiv.style.display = 'block';
+        });
+        
+        // Initialize the demo
+        initCSRFToken();
+    </script>
+</body>
+</html>

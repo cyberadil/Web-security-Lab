@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Security Demo - Web Security Lab</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;500&display=swap');
+        
+        :root {
+            --primary-neon: #00ff88;
+            --secondary-neon: #ff0080;
+            --accent-neon: #0080ff;
+            --warning-neon: #ffaa00;
+            --danger-neon: #ff0040;
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --bg-card: #111111;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-neon: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-neon), var(--warning-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-neon);
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .demo-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-neon), var(--warning-neon));
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .demo-section h2 {
+            font-family: 'Orbitron', monospace;
+            color: var(--primary-neon);
+            margin-bottom: 1rem;
+        }
+        
+        .product-card {
+            background: var(--bg-darker);
+            border: 1px solid var(--border-neon);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            border-color: var(--primary-neon);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.2);
+        }
+        
+        .product-name {
+            font-weight: bold;
+            color: var(--primary-neon);
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-price {
+            font-size: 1.2rem;
+            color: var(--warning-neon);
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        input[type="text"], input[type="email"], input[type="number"], select {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-darker);
+            border: 1px solid var(--border-neon);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, var(--primary-neon), var(--accent-neon));
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: var(--bg-dark);
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, var(--danger-neon), var(--warning-neon));
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 8px 25px rgba(255, 0, 64, 0.4);
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--bg-darker);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-neon);
+        }
+        
+        .result.vulnerable {
+            border-left-color: var(--danger-neon);
+        }
+        
+        .warning {
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid var(--warning-neon);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .warning h3 {
+            color: var(--warning-neon);
+            margin-bottom: 0.5rem;
+        }
+        
+        .security-indicator {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .security-indicator.secure {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--primary-neon);
+            border: 1px solid var(--primary-neon);
+        }
+        
+        .security-indicator.vulnerable {
+            background: rgba(255, 0, 64, 0.2);
+            color: var(--danger-neon);
+            border: 1px solid var(--danger-neon);
+        }
+        
+        .cart-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--warning-neon);
+            text-align: right;
+            margin: 1rem 0;
+        }
+        
+        pre {
+            background: var(--bg-darker);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border-neon);
+        }
+        
+        code {
+            color: var(--primary-neon);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛒 E-commerce Security Demo</h1>
+            <p>Secure payment processing and data protection implementations</p>
+        </header>
+        
+        <div class="warning">
+            <h3>⚠️ Educational Purpose Only</h3>
+            <p>This demo showcases e-commerce security best practices. Never use real payment information in demos.</p>
+        </div>
+        
+        <div class="demo-grid">
+            <!-- Secure Checkout -->
+            <div class="demo-section">
+                <span class="security-indicator secure">🔒 Secure Checkout</span>
+                <h2>Secure Payment Processing</h2>
+                
+                <div class="product-card">
+                    <div class="product-name">Security Course Bundle</div>
+                    <div class="product-price">$99.99</div>
+                    <p>Comprehensive web security training</p>
+                </div>
+                
+                <form id="secureCheckout">
+                    <div class="form-group">
+                        <label for="secure-name">Full Name:</label>
+                        <input type="text" id="secure-name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="secure-email">Email:</label>
+                        <input type="email" id="secure-email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="secure-card">Card Number (Demo):</label>
+                        <input type="text" id="secure-card" placeholder="4111-1111-1111-1111" maxlength="19" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="secure-expiry">Expiry Date:</label>
+                        <input type="text" id="secure-expiry" placeholder="MM/YY" maxlength="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="secure-cvv">CVV:</label>
+                        <input type="text" id="secure-cvv" placeholder="123" maxlength="4" required>
+                    </div>
+                    
+                    <div class="cart-total">Total: $99.99</div>
+                    <button type="submit" class="btn">Secure Checkout</button>
+                </form>
+                
+                <div id="secureResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- Vulnerable Checkout -->
+            <div class="demo-section">
+                <span class="security-indicator vulnerable">⚠️ Vulnerable Checkout</span>
+                <h2>Insecure Payment Processing</h2>
+                
+                <div class="product-card">
+                    <div class="product-name">Security Course Bundle</div>
+                    <div class="product-price">$99.99</div>
+                    <p>Comprehensive web security training</p>
+                </div>
+                
+                <form id="vulnerableCheckout">
+                    <div class="form-group">
+                        <label for="vuln-name">Full Name:</label>
+                        <input type="text" id="vuln-name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vuln-email">Email:</label>
+                        <input type="email" id="vuln-email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vuln-card">Card Number:</label>
+                        <input type="text" id="vuln-card" placeholder="4111111111111111" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vuln-expiry">Expiry Date:</label>
+                        <input type="text" id="vuln-expiry" placeholder="12/25" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vuln-cvv">CVV:</label>
+                        <input type="text" id="vuln-cvv" placeholder="123" required>
+                    </div>
+                    
+                    <div class="cart-total">Total: $99.99</div>
+                    <button type="submit" class="btn btn-danger">Insecure Checkout</button>
+                </form>
+                
+                <div id="vulnerableResult" class="result vulnerable" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🔐 Security Features Comparison</h2>
+            
+            <div class="demo-grid">
+                <div>
+                    <h3 style="color: var(--primary-neon);">✅ Secure Implementation</h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.8;">
+                        <li>• HTTPS/TLS encryption</li>
+                        <li>• PCI DSS compliance</li>
+                        <li>• Input validation & sanitization</li>
+                        <li>• Tokenization of payment data</li>
+                        <li>• Rate limiting & fraud detection</li>
+                        <li>• Secure session management</li>
+                        <li>• Data encryption at rest</li>
+                        <li>• Audit logging</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 style="color: var(--danger-neon);">❌ Vulnerable Implementation</h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.8;">
+                        <li>• HTTP (unencrypted) transmission</li>
+                        <li>• Plain text data storage</li>
+                        <li>• No input validation</li>
+                        <li>• Direct card data processing</li>
+                        <li>• No rate limiting</li>
+                        <li>• Weak session management</li>
+                        <li>• No encryption</li>
+                        <li>• No audit trail</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>💳 Payment Security Standards</h2>
+            
+            <h3>PCI DSS Requirements:</h3>
+            <pre><code>1. Install and maintain a firewall configuration
+2. Do not use vendor-supplied defaults for passwords
+3. Protect stored cardholder data
+4. Encrypt transmission of cardholder data
+5. Use and regularly update anti-virus software
+6. Develop and maintain secure systems
+7. Restrict access to cardholder data by business need
+8. Assign a unique ID to each person with computer access
+9. Restrict physical access to cardholder data
+10. Track and monitor all access to network resources
+11. Regularly test security systems and processes
+12. Maintain a policy that addresses information security</code></pre>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🛡️ E-commerce Security Best Practices</h2>
+            <ul style="color: var(--text-secondary); line-height: 1.8;">
+                <li>• <strong>Use Payment Processors:</strong> Stripe, PayPal, Square for PCI compliance</li>
+                <li>• <strong>Implement 2FA:</strong> Two-factor authentication for admin accounts</li>
+                <li>• <strong>Regular Security Audits:</strong> Penetration testing and vulnerability scans</li>
+                <li>• <strong>Data Minimization:</strong> Only collect necessary customer data</li>
+                <li>• <strong>Secure APIs:</strong> Rate limiting, authentication, input validation</li>
+                <li>• <strong>GDPR Compliance:</strong> Data protection and privacy rights</li>
+                <li>• <strong>Incident Response:</strong> Plan for security breaches</li>
+                <li>• <strong>Regular Updates:</strong> Keep all software and dependencies updated</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Format card number input
+        document.getElementById('secure-card').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(\d{4})(?=\d)/g, '$1-');
+            e.target.value = value;
+        });
+        
+        // Format expiry date
+        document.getElementById('secure-expiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+        
+        // Secure checkout form
+        document.getElementById('secureCheckout').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('secure-name').value,
+                email: document.getElementById('secure-email').value,
+                cardNumber: document.getElementById('secure-card').value,
+                expiry: document.getElementById('secure-expiry').value,
+                cvv: document.getElementById('secure-cvv').value
+            };
+            
+            // Simulate secure processing
+            setTimeout(() => {
+                const resultDiv = document.getElementById('secureResult');
+                resultDiv.innerHTML = `
+                    <h3>✅ Secure Payment Processed</h3>
+                    <p><strong>Transaction ID:</strong> TXN_${Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+                    <p><strong>Security Features:</strong></p>
+                    <ul>
+                        <li>• Payment data tokenized and encrypted</li>
+                        <li>• PCI DSS compliant processing</li>
+                        <li>• Fraud detection algorithms applied</li>
+                        <li>• Secure audit trail created</li>
+                        <li>• Customer data protected</li>
+                    </ul>
+                    <p><strong>Card:</strong> ****-****-****-${formData.cardNumber.slice(-4)}</p>
+                    <p><strong>Amount:</strong> $99.99</p>
+                `;
+                resultDiv.style.display = 'block';
+            }, 1500);
+        });
+        
+        // Vulnerable checkout form
+        document.getElementById('vulnerableCheckout').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('vuln-name').value,
+                email: document.getElementById('vuln-email').value,
+                cardNumber: document.getElementById('vuln-card').value,
+                expiry: document.getElementById('vuln-expiry').value,
+                cvv: document.getElementById('vuln-cvv').value
+            };
+            
+            // Simulate vulnerable processing
+            setTimeout(() => {
+                const resultDiv = document.getElementById('vulnerableResult');
+                resultDiv.innerHTML = `
+                    <h3>⚠️ Vulnerable Payment Processed</h3>
+                    <p><strong>Transaction ID:</strong> ${Math.random().toString(36).substr(2, 9)}</p>
+                    <p><strong>Security Vulnerabilities:</strong></p>
+                    <ul>
+                        <li>• Card data stored in plain text</li>
+                        <li>• No encryption during transmission</li>
+                        <li>• No fraud detection</li>
+                        <li>• Insufficient audit logging</li>
+                        <li>• PCI DSS non-compliant</li>
+                    </ul>
+                    <p><strong>Exposed Data:</strong> ${JSON.stringify(formData, null, 2)}</p>
+                    <p style="color: var(--danger-neon);"><strong>Risk:</strong> This data could be intercepted or stolen!</p>
+                `;
+                resultDiv.style.display = 'block';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

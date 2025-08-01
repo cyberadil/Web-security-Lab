@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+    <title>XSS Vulnerability Demo - Mohamed Adil</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Cross-Site Scripting (XSS) Demo</h1>
+            <p>Educational demonstration of XSS vulnerabilities and prevention</p>
+        </header>
+
+        <div class="demo-section">
+            <h2>Vulnerable Implementation</h2>
+            <input type="text" id="vulnerable-input" placeholder="Enter your message...">
+            <button onclick="vulnerableSubmit()">Submit (Vulnerable)</button>
+            <div id="vulnerable-output" class="output-box"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Secure Implementation</h2>
+            <input type="text" id="secure-input" placeholder="Enter your message...">
+            <button onclick="secureSubmit()">Submit (Secure)</button>
+            <div id="secure-output" class="output-box"></div>
+        </div>
+
+        <div class="info-section">
+            <h2>Prevention Techniques</h2>
+            <ul>
+                <li>Input Sanitization</li>
+                <li>Output Encoding</li>
+                <li>Content Security Policy (CSP)</li>
+                <li>HTTP-only Cookies</li>
+                <li>Input Validation</li>
+                <li>Escape User Input</li>
+            </ul>
+        </div>
+        
+        <div class="info-section">
+            <h2>Demo Instructions</h2>
+            <div style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+                <p><strong>How to use this demo:</strong></p>
+                <ol style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                    <li>Enter text in either input field</li>
+                    <li>Try XSS payloads like: <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code></li>
+                    <li>Compare vulnerable vs secure output</li>
+                    <li>Use keyboard shortcuts: Ctrl+Enter for demo, Esc to clear</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/security-utils.js"></script>
+    <script src="js/xss-demo.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Run migrations
+npm run db:migrate
+
+# Seed data
+npm run db:seed
