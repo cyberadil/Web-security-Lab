@@ -1,0 +1,125 @@
+/* Dark Mode Styles for Web Security Lab
+ * Provides consistent dark/light theme across all lab pages
+ */
+
+:root {
+  /* Dark Theme Colors (Default) */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #888888;
+  --border: #333333;
+  
+  /* Accent Colors */
+  --primary-neon: #00ff88;
+  --secondary-neon: #ff0080;
+  --accent-neon: #0080ff;
+  --warning-neon: #ffaa00;
+  --danger-neon: #ff0040;
+  
+  /* Shadows */
+  --shadow-neon: 0 0 20px rgba(0, 255, 136, 0.3);
+  --shadow-danger: 0 0 20px rgba(255, 0, 64, 0.3);
+  --shadow-warning: 0 0 20px rgba(255, 170, 0, 0.3);
+}
+
+/* Light Theme Class */
+body.light-theme {
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e5e5e5;
+  --text-primary: #111111;
+  --text-secondary: #444444;
+  --text-muted: #777777;
+  --border: #dddddd;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.theme-toggle-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-icon.active {
+  background: var(--accent-neon);
+  color: var(--bg-primary);
+}
+
+/* Apply theme to common elements */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.container, .card, .panel, .box {
+  background-color: var(--bg-secondary);
+  border-color: var(--border);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
+p, span, div {
+  color: var(--text-secondary);
+}
+
+input, textarea, select {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+button, .button {
+  background: linear-gradient(90deg, var(--primary-neon), var(--accent-neon));
+  color: var(--bg-primary);
+}
+
+a {
+  color: var(--accent-neon);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-neon);
+}

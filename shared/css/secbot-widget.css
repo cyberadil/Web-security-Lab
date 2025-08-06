@@ -1,0 +1,335 @@
+/* SecBot AI Assistant Widget Styles */
+.secbot-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.secbot-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0080ff, #00ff88);
+  box-shadow: 0 4px 20px rgba(0, 128, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  outline: none;
+}
+
+.secbot-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px rgba(0, 128, 255, 0.7);
+}
+
+.secbot-button img {
+  width: 30px;
+  height: 30px;
+}
+
+.secbot-chat {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 350px;
+  height: 500px;
+  background: #111111;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  transform-origin: bottom right;
+  border: 1px solid #333333;
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+}
+
+.secbot-chat.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
+}
+
+.secbot-header {
+  background: linear-gradient(90deg, #0080ff, #00ff88);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.secbot-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.secbot-header-title img {
+  width: 24px;
+  height: 24px;
+}
+
+.secbot-header-title h3 {
+  color: #000000;
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  margin: 0;
+}
+
+.secbot-close {
+  background: none;
+  border: none;
+  color: #000000;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.secbot-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.secbot-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  scrollbar-width: thin;
+  scrollbar-color: #333333 #111111;
+}
+
+.secbot-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.secbot-messages::-webkit-scrollbar-track {
+  background: #111111;
+}
+
+.secbot-messages::-webkit-scrollbar-thumb {
+  background-color: #333333;
+  border-radius: 6px;
+}
+
+.secbot-message {
+  max-width: 80%;
+  padding: 10px 15px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.secbot-message.user {
+  align-self: flex-end;
+  background: #0080ff;
+  color: #ffffff;
+  border-bottom-right-radius: 0;
+}
+
+.secbot-message.bot {
+  align-self: flex-start;
+  background: #222222;
+  color: #ffffff;
+  border-bottom-left-radius: 0;
+}
+
+.secbot-message.bot a {
+  color: #00ff88;
+  text-decoration: none;
+}
+
+.secbot-message.bot a:hover {
+  text-decoration: underline;
+}
+
+.secbot-message.bot code {
+  background: #333333;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+}
+
+.secbot-message.bot pre {
+  background: #333333;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 10px 0;
+}
+
+.secbot-message.bot pre code {
+  background: none;
+  padding: 0;
+}
+
+.secbot-input {
+  padding: 15px;
+  background: #1a1a1a;
+  border-top: 1px solid #333333;
+  display: flex;
+  gap: 10px;
+}
+
+.secbot-input input {
+  flex: 1;
+  background: #222222;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  padding: 10px 15px;
+  color: #ffffff;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.secbot-input input:focus {
+  border-color: #0080ff;
+  box-shadow: 0 0 10px rgba(0, 128, 255, 0.3);
+}
+
+.secbot-input button {
+  background: linear-gradient(135deg, #0080ff, #00ff88);
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #000000;
+  font-size: 18px;
+}
+
+.secbot-input button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 128, 255, 0.5);
+}
+
+.secbot-input button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secbot-loader {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px;
+  background: #222222;
+  border-radius: 12px;
+  align-self: flex-start;
+  margin-top: 5px;
+}
+
+.secbot-loader span {
+  width: 8px;
+  height: 8px;
+  background: #0080ff;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.secbot-loader span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.secbot-loader span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(0.5); opacity: 0.5; }
+  50% { transform: scale(1); opacity: 1; }
+}
+
+/* Dark mode toggle */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  background: #222222;
+  border: 1px solid #333333;
+  border-radius: 20px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.theme-toggle-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-icon.active {
+  background: #0080ff;
+  color: #ffffff;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .secbot-chat {
+    width: calc(100% - 40px);
+    height: 60vh;
+    bottom: 80px;
+  }
+}
+
+/* Tooltip */
+.secbot-tooltip {
+  position: absolute;
+  background: #333333;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  bottom: 70px;
+  right: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.secbot-button:hover .secbot-tooltip {
+  opacity: 1;
+}

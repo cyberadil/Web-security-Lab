@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecBot Connection Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff88;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #111;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+        .test-result {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .success {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: #00ff88;
+        }
+        .error {
+            background: rgba(255, 0, 64, 0.1);
+            border-color: #ff0040;
+            color: #ff0040;
+        }
+        .loading {
+            background: rgba(255, 170, 0, 0.1);
+            border-color: #ffaa00;
+            color: #ffaa00;
+        }
+        button {
+            background: linear-gradient(45deg, #00ff88, #0080ff);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: #0a0a0a;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+        pre {
+            background: #050505;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🤖 SecBot Connection Test</h1>
+        <p>This page tests the connection to SecBot AI Assistant</p>
+        
+        <div id="healthTest" class="test-result loading">
+            <h3>🔍 Health Check Test</h3>
+            <p>Testing server health...</p>
+        </div>
+        
+        <div id="corsTest" class="test-result loading">
+            <h3>🌐 CORS Test</h3>
+            <p>Testing cross-origin requests...</p>
+        </div>
+        
+        <div id="chatTest" class="test-result loading">
+            <h3>💬 Chat API Test</h3>
+            <p>Testing chat functionality...</p>
+        </div>
+        
+        <button onclick="runTests()">🔄 Run Tests Again</button>
+        <button onclick="testChat()">💬 Test Chat Message</button>
+        
+        <div id="chatResponse" style="display: none;">
+            <h3>Chat Response:</h3>
+            <pre id="responseText"></pre>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3002';
+        
+        async function testHealth() {
+            const resultDiv = document.getElementById('healthTest');
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Health Check Test</h3>
+                        <p>Server is healthy and responding</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Health Check Test</h3>
+                    <p>Failed to connect to server: ${error.message}</p>
+                `;
+            }
+        }
+        
+        async function testCORS() {
+            const resultDiv = document.getElementById('corsTest');
+            try {
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ CORS Test</h3>
+                        <p>Cross-origin requests are working correctly</p>
+                        <p>Origin: ${window.location.origin}</p>
+                    `;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ CORS Test</h3>
+                    <p>CORS error: ${error.message}</p>
+                    <p>Your origin: ${window.location.origin}</p>
+                `;
+            }
+        }
+        
+        async function testChatAPI() {
+            const resultDiv = document.getElementById('chatTest');
+            try {
+                const response = await fetch(`${API_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: 'Hello SecBot, this is a connection test!',
+                        sessionId: 'test-session'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Chat API Test</h3>
+                        <p>Chat API is working correctly</p>
+                        <p><strong>Response:</strong> ${(data.reply || data.response || 'No response').substring(0, 100)}...</p>
+                    `;
+                } else {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Chat API Test</h3>
+                    <p>Chat API error: ${error.message}</p>
+                `;
+            }
+        }
+        
+        async function runTests() {
+            // Reset all tests to loading state
+            document.querySelectorAll('.test-result').forEach(div => {
+                div.className = 'test-result loading';
+                const h3 = div.querySelector('h3');
+                const title = h3.textContent.replace(/[✅❌]/, '🔄');
+                div.innerHTML = `<h3>${title}</h3><p>Testing...</p>`;
+            });
+            
+            // Run tests sequentially
+            await testHealth();
+            await testCORS();
+            await testChatAPI();
+        }
+        
+        async function testChat() {
+            const responseDiv = document.getElementById('chatResponse');
+            const responseText = document.getElementById('responseText');
+            
+            try {
+                responseDiv.style.display = 'block';
+                responseText.textContent = 'Sending test message...';
+                
+                const response = await fetch(`${API_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: 'What is XSS and how can I prevent it?',
+                        sessionId: 'manual-test-' + Date.now()
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    responseText.textContent = data.reply || data.response || 'No response received';
+                } else {
+                    responseText.textContent = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                responseText.textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // Run tests when page loads
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>

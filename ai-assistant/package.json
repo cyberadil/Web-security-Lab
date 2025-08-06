@@ -1,0 +1,31 @@
+{
+  "name": "secbot-ai-assistant",
+  "version": "1.0.0",
+  "description": "SecBot AI Assistant - Cybersecurity Learning Lab Backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"SecBot server test - use npm start to run the server\""
+  },
+  "keywords": [
+    "secbot",
+    "cybersecurity",
+    "ai-assistant",
+    "express",
+    "nodejs",
+    "cors"
+  ],
+  "author": "Mohamed Adil",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

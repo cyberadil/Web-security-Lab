@@ -1,0 +1,24 @@
+{
+  "name": "secbot-ai-assistant",
+  "version": "1.0.0",
+  "description": "SecBot AI Assistant - Simple Backend Server",
+  "main": "secbot-server.js",
+  "scripts": {
+    "start": "node secbot-server.js",
+    "dev": "nodemon secbot-server.js",
+    "test": "echo \"SecBot server ready for testing\""
+  },
+  "keywords": ["secbot", "ai", "assistant", "security", "express"],
+  "author": "Mohamed Adil",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

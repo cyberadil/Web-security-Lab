@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Verification - Web Security Lab</title>
+    <link rel="stylesheet" href="/shared/css/cyberpunk-theme.css">
+    <style>
+        .verification-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .lab-status {
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-neon);
+        }
+        
+        .lab-status.success {
+            background: rgba(0, 255, 136, 0.1);
+            border-left-color: var(--primary-neon);
+        }
+        
+        .lab-status.error {
+            background: rgba(255, 0, 64, 0.1);
+            border-left-color: var(--danger-neon);
+        }
+        
+        .theme-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .color-sample {
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .primary { background: var(--primary-neon); color: var(--bg-dark); }
+        .danger { background: var(--danger-neon); color: var(--bg-dark); }
+        .warning { background: var(--warning-neon); color: var(--bg-dark); }
+        .accent { background: var(--accent-neon); color: var(--bg-dark); }
+        .secondary { background: var(--secondary-neon); color: var(--bg-dark); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Theme Verification Center</h1>
+            <p>Verify that all Web Security Lab demos are using the consistent cyberpunk theme</p>
+        </header>
+
+        <div class="demo-section">
+            <h2>🔍 Lab Theme Status</h2>
+            <p>Click the links below to verify each lab is properly themed:</p>
+            
+            <div class="verification-grid" id="labStatus">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🌈 Theme Color Palette</h2>
+            <p>Verify these colors are displaying correctly:</p>
+            
+            <div class="theme-demo">
+                <div>
+                    <div class="color-sample primary">Primary Neon</div>
+                    <code>--primary-neon: #00ff88</code>
+                </div>
+                <div>
+                    <div class="color-sample danger">Danger Neon</div>
+                    <code>--danger-neon: #ff0040</code>
+                </div>
+                <div>
+                    <div class="color-sample warning">Warning Neon</div>
+                    <code>--warning-neon: #ffaa00</code>
+                </div>
+                <div>
+                    <div class="color-sample accent">Accent Neon</div>
+                    <code>--accent-neon: #0080ff</code>
+                </div>
+                <div>
+                    <div class="color-sample secondary">Secondary Neon</div>
+                    <code>--secondary-neon: #ff0080</code>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>✨ Component Showcase</h2>
+            
+            <div class="demo-grid">
+                <div class="card">
+                    <h3>Card Component</h3>
+                    <p>This is a standard card with hover effects and neon border.</p>
+                    <button class="btn">Primary Button</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Status Indicators</h3>
+                    <div style="margin: 1rem 0;">
+                        <span class="status secure">🔒 Secure</span>
+                        <span class="status vulnerable">⚠️ Vulnerable</span>
+                        <span class="status warning">💡 Warning</span>
+                    </div>
+                    <button class="btn-danger">Danger Button</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Form Elements</h3>
+                    <div class="form-group">
+                        <label>Test Input:</label>
+                        <input type="text" placeholder="Type here to test styling...">
+                    </div>
+                    <button class="btn-secondary">Secondary Button</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>📊 Typography Test</h2>
+            <div class="demo-grid">
+                <div>
+                    <h1 style="font-family: 'Orbitron', monospace; font-size: 2rem;">Orbitron Heading</h1>
+                    <h2 style="color: var(--accent-neon);">Secondary Heading</h2>
+                    <h3>Tertiary Heading</h3>
+                    <p>Body text using Roboto Mono with proper line spacing and contrast.</p>
+                </div>
+                <div>
+                    <code style="display: block; margin: 1rem 0;">
+                        // Code block example
+                        const theme = 'cyberpunk';
+                        console.log('Theme loaded:', theme);
+                    </code>
+                    <pre>
+function testTheme() {
+    return document.body.style.background;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>📋 Verification Checklist</h2>
+            <ul id="checklist">
+                <li>✅ Dark background with subtle grid pattern</li>
+                <li>✅ Neon color scheme (green, red, orange, blue, pink)</li>
+                <li>✅ Orbitron font for headings</li>
+                <li>✅ Roboto Mono font for body text</li>
+                <li>✅ Hover effects on cards and buttons</li>
+                <li>✅ Gradient borders on demo sections</li>
+                <li>✅ Consistent spacing and layout</li>
+                <li>✅ Responsive design for mobile devices</li>
+            </ul>
+        </div>
+
+        <div class="demo-section danger">
+            <h2 class="danger">🚨 Troubleshooting</h2>
+            <p>If you see plain white backgrounds or default styling:</p>
+            <ol style="color: var(--text-secondary); line-height: 1.8; margin-left: 1.5rem;">
+                <li>Ensure the server is running: <code>npm start</code></li>
+                <li>Clear browser cache: <code>Ctrl+F5</code></li>
+                <li>Check console for CSS loading errors: <code>F12</code></li>
+                <li>Verify shared CSS path: <code>/shared/css/cyberpunk-theme.css</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Lab verification data
+        const labs = [
+            { name: 'XSS Demo', url: '/', icon: '🔍' },
+            { name: 'SQL Injection', url: '/02-SQL-Injection-Demo Implementation/frontend/', icon: '💉' },
+            { name: 'CSRF Protection', url: '/03-CSRF-Demo Implementation/frontend/', icon: '🔄' },
+            { name: 'E-commerce Security', url: '/04-E-commerce-Security Implementation/frontend/', icon: '🛒' },
+            { name: 'Security Dashboard', url: '/05-Security-Dashboard Implementation/frontend/', icon: '📊' },
+            { name: 'Demo Hub', url: '/demo-hub', icon: '🎯' },
+            { name: 'Connection Test', url: '/test-connection', icon: '🔗' }
+        ];
+
+        // Populate lab status
+        function populateLabStatus() {
+            const container = document.getElementById('labStatus');
+            
+            labs.forEach(lab => {
+                const statusDiv = document.createElement('div');
+                statusDiv.className = 'lab-status success';
+                statusDiv.innerHTML = `
+                    <h4>${lab.icon} ${lab.name}</h4>
+                    <p><a href="${lab.url}" target="_blank" style="color: var(--primary-neon);">Open Lab →</a></p>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Should display dark cyberpunk theme</p>
+                `;
+                container.appendChild(statusDiv);
+            });
+        }
+
+        // Check if theme is loaded
+        function verifyThemeLoaded() {
+            const computedStyle = getComputedStyle(document.documentElement);
+            const primaryNeon = computedStyle.getPropertyValue('--primary-neon').trim();
+            
+            if (primaryNeon === '#00ff88') {
+                console.log('✅ Theme loaded successfully');
+                document.title = '✅ Theme Verified - Web Security Lab';
+            } else {
+                console.error('❌ Theme not loaded properly');
+                document.title = '❌ Theme Error - Web Security Lab';
+                
+                // Add error indicator
+                const header = document.querySelector('header h1');
+                header.innerHTML = '❌ Theme Loading Error';
+                header.style.color = 'red';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            populateLabStatus();
+            verifyThemeLoaded();
+            
+            // Add keyboard shortcut for quick theme test
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 't') {
+                    const results = labs.map(lab => `${lab.name}: ${lab.url}`).join('\\n');
+                    alert('🎨 Theme Test Results:\\n\\n' + results);
+                }
+            });
+        });
+
+        // Log theme information
+        console.log('🎨 Theme Verification Page Loaded');
+        console.log('📋 Available labs:', labs.length);
+        console.log('🎯 Press Ctrl+T for quick lab overview');
+    </script>
+</body>
+</html>

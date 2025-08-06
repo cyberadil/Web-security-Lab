@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Connection Test</title>
+    <link rel="stylesheet" href="/shared/css/cyberpunk-theme.css">
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff88;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+        .success { background: rgba(0, 255, 136, 0.2); color: #00ff88; }
+        .error { background: rgba(255, 0, 64, 0.2); color: #ff0040; }
+        .warning { background: rgba(255, 170, 0, 0.2); color: #ffaa00; }
+        button {
+            background: #00ff88;
+            color: #0a0a0a;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0.5rem;
+        }
+        button:hover {
+            background: #00dd77;
+        }
+        pre {
+            background: #050505;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            border-left: 3px solid #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 Backend Connection Test</h1>
+        <p>This page helps you verify that your frontend is properly connected to the backend API.</p>
+
+        <div class="test-section">
+            <h2>Server Status Check</h2>
+            <button onclick="testHealth()">Test Health Endpoint</button>
+            <button onclick="testSecurityInfo()">Test Security Info</button>
+            <div id="health-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>XSS API Test</h2>
+            <button onclick="testXSSVulnerable()">Test Vulnerable Endpoint</button>
+            <button onclick="testXSSSecure()">Test Secure Endpoint</button>
+            <div id="xss-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Connection Information</h2>
+            <div id="connection-info">
+                <p><strong>Current URL:</strong> <span id="current-url"></span></p>
+                <p><strong>Expected Backend:</strong> <span>http://localhost:3000</span></p>
+                <p><strong>User Agent:</strong> <span id="user-agent"></span></p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Real-time Logs</h2>
+            <pre id="logs"></pre>
+            <button onclick="clearLogs()">Clear Logs</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize page
+        document.getElementById('current-url').textContent = window.location.origin;
+        document.getElementById('user-agent').textContent = navigator.userAgent;
+
+        let logContainer = document.getElementById('logs');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\\n`;
+            logContainer.textContent += logEntry;
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            console.log(`[Backend Test] ${message}`);
+        }
+
+        function setStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function clearLogs() {
+            logContainer.textContent = '';
+        }
+
+        async function testHealth() {
+            log('Testing health endpoint...', 'info');
+            
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    setStatus('health-status', '✅ Health check successful', 'success');
+                    log(`Health check successful: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    setStatus('health-status', '❌ Health check failed', 'error');
+                    log(`Health check failed: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                setStatus('health-status', '❌ Connection failed', 'error');
+                log(`Health check error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSecurityInfo() {
+            log('Testing security info endpoint...', 'info');
+            
+            try {
+                const response = await fetch('/api/security-info');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    setStatus('health-status', '✅ Security info retrieved', 'success');
+                    log(`Security info: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    setStatus('health-status', '❌ Security info failed', 'error');
+                    log(`Security info failed: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                setStatus('health-status', '❌ Connection failed', 'error');
+                log(`Security info error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testXSSVulnerable() {
+            log('Testing XSS vulnerable endpoint...', 'info');
+            
+            try {
+                const response = await fetch('/api/xss/vulnerable', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: 'Test message for XSS' })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    setStatus('xss-status', '✅ XSS vulnerable endpoint working', 'success');
+                    log(`XSS vulnerable test: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    setStatus('xss-status', '❌ XSS vulnerable endpoint failed', 'error');
+                    log(`XSS vulnerable failed: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                setStatus('xss-status', '❌ Connection failed', 'error');
+                log(`XSS vulnerable error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testXSSSecure() {
+            log('Testing XSS secure endpoint...', 'info');
+            
+            try {
+                const response = await fetch('/api/xss/secure', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: '<script>alert("test")</script>' })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    setStatus('xss-status', '✅ XSS secure endpoint working', 'success');
+                    log(`XSS secure test: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    setStatus('xss-status', '❌ XSS secure endpoint failed', 'error');
+                    log(`XSS secure failed: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                setStatus('xss-status', '❌ Connection failed', 'error');
+                log(`XSS secure error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run basic tests on page load
+        window.addEventListener('load', () => {
+            log('Page loaded - running initial tests...', 'info');
+            setTimeout(() => {
+                testHealth();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

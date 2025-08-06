@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecBot Widget Integration Example</title>
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: #0a0a0a;
+            color: #ffffff;
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .demo-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #00ff88, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .integration-example {
+            background: #111111;
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .integration-example h2 {
+            color: #00ff88;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background: #050505;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .code-block code {
+            color: #00ff88;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .demo-content {
+            background: #111111;
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            min-height: 400px;
+        }
+        
+        .demo-content h3 {
+            color: #0080ff;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-content p {
+            color: #cccccc;
+            margin-bottom: 1rem;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 1rem 0;
+        }
+        
+        .status-ready {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+        
+        .status-error {
+            background: rgba(255, 0, 64, 0.2);
+            color: #ff0040;
+            border: 1px solid #ff0040;
+        }
+        
+        .instructions {
+            background: #111111;
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .instructions h3 {
+            color: #ffaa00;
+            margin-bottom: 1rem;
+        }
+        
+        .instructions ol {
+            color: #cccccc;
+            padding-left: 1.5rem;
+        }
+        
+        .instructions li {
+            margin: 0.5rem 0;
+        }
+    </style>
+    <!-- SecBot Widget Styles -->
+    <link rel="stylesheet" href="http://localhost:3001/styles.css">
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🤖 SecBot Widget Integration</h1>
+            <p>Example of integrating SecBot into your Web Security Lab</p>
+        </div>
+        
+        <div class="integration-example">
+            <h2>📋 Integration Code</h2>
+            <p>Add this code to any HTML page to integrate the SecBot widget:</p>
+            
+            <div class="code-block">
+                <code>&lt;!-- Include SecBot CSS --&gt;<br>
+&lt;link rel="stylesheet" href="http://localhost:3001/styles.css"&gt;<br><br>
+
+&lt;!-- Include SecBot JavaScript --&gt;<br>
+&lt;script src="http://localhost:3001/script.js"&gt;&lt;/script&gt;<br><br>
+
+&lt;!-- Initialize Widget --&gt;<br>
+&lt;script&gt;<br>
+&nbsp;&nbsp;document.addEventListener('DOMContentLoaded', () =&gt; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;SecBotAssistant.integrateWidget(document.body, {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;apiUrl: 'http://localhost:3001/api'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;});<br>
+&nbsp;&nbsp;});<br>
+&lt;/script&gt;</code>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>🚀 Setup Instructions</h3>
+            <ol>
+                <li>Make sure the SecBot server is running on port 3001</li>
+                <li>Set up your OpenAI API key in the .env file</li>
+                <li>Include the CSS and JavaScript files in your HTML</li>
+                <li>Initialize the widget with the integration code</li>
+                <li>The widget will appear as a floating button in the bottom-right corner</li>
+            </ol>
+        </div>
+        
+        <div class="demo-content">
+            <h3>🎯 Demo Content</h3>
+            <p>This is an example page showing how SecBot integrates with your existing content.</p>
+            <p>The SecBot widget appears as a floating button and can be opened to chat about web security topics.</p>
+            
+            <div id="serverStatus" class="status-indicator status-error">
+                🔴 Checking server status...
+            </div>
+            
+            <h4>Try asking SecBot about:</h4>
+            <ul>
+                <li>🔍 Cross-Site Scripting (XSS) vulnerabilities</li>
+                <li>💉 SQL Injection prevention techniques</li>
+                <li>🔄 CSRF protection mechanisms</li>
+                <li>🛡️ OWASP Top 10 security risks</li>
+                <li>🔒 Secure coding best practices</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- SecBot Widget JavaScript -->
+    <script src="http://localhost:3001/script.js"></script>
+    <script>
+        // Check server status
+        async function checkServerStatus() {
+            const statusElement = document.getElementById('serverStatus');
+            
+            try {
+                const response = await fetch('http://localhost:3001/health');
+                if (response.ok) {
+                    statusElement.textContent = '🟢 SecBot server is running';
+                    statusElement.className = 'status-indicator status-ready';
+                } else {
+                    throw new Error('Server not responding');
+                }
+            } catch (error) {
+                statusElement.textContent = '🔴 SecBot server is not running - Start with: npm start';
+                statusElement.className = 'status-indicator status-error';
+            }
+        }
+        
+        // Initialize widget when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            checkServerStatus();
+            
+            // Initialize SecBot widget
+            try {
+                SecBotAssistant.integrateWidget(document.body, {
+                    apiUrl: 'http://localhost:3001/api'
+                });
+                console.log('✅ SecBot widget integrated successfully');
+            } catch (error) {
+                console.error('❌ Failed to integrate SecBot widget:', error);
+            }
+        });
+    </script>
+</body>
+</html>

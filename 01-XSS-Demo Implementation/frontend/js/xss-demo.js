@@ -131,7 +131,7 @@ class XSSDemo {
         this.utils.animateOutput(this.secureOutput, welcomeMsg);
     }
 
-    vulnerableSubmit() {
+    async vulnerableSubmit() {
         const input = this.vulnerableInput.value;
         const outputBox = this.vulnerableOutput;
         
@@ -140,40 +140,70 @@ class XSSDemo {
             return;
         }
 
-        // Simulate processing
+        // Show loading state
         this.utils.setLoading(document.querySelector('button[onclick="vulnerableSubmit()"]'), true);
         
-        setTimeout(() => {
-            // VULNERABLE: Directly insert user input without sanitization
-            const vulnerableOutput = `
-                <div style="margin-bottom: 1rem;">
-                    <strong style="color: #ff0040;">⚠️ VULNERABLE OUTPUT:</strong>
-                </div>
-                <div style="background: rgba(255, 0, 64, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid #ff0040;">
-                    ${input}
-                </div>
-                <div style="margin-top: 1rem; font-size: 0.8rem; color: #ffaa00;">
-                    <strong>Risk:</strong> This implementation directly renders user input, making it vulnerable to XSS attacks.
-                </div>
-            `;
-            
-            this.utils.animateOutput(outputBox, vulnerableOutput);
-            this.utils.setLoading(document.querySelector('button[onclick="vulnerableSubmit()"]'), false);
-            
-            // Log the vulnerability
-            this.utils.logSecurityEvent('VULNERABLE_INPUT_PROCESSED', {
-                input: input,
-                hasXSS: this.utils.detectXSS(input)
+        try {
+            // Make API call to vulnerable endpoint
+            const response = await fetch('/api/xss/vulnerable', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: input })
             });
             
-            if (this.utils.detectXSS(input)) {
-                this.utils.showAlert('🚨 XSS Attack Detected! This input could execute malicious code!', 'danger');
-                outputBox.classList.add('alert-danger');
+            const data = await response.json();
+            
+            if (data.success) {
+                // VULNERABLE: Directly render the response (which contains unsanitized input)
+                const vulnerableOutput = `
+                    <div style="margin-bottom: 1rem;">
+                        <strong style="color: #ff0040;">⚠️ VULNERABLE OUTPUT (from Backend API):</strong>
+                    </div>
+                    <div style="background: rgba(255, 0, 64, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid #ff0040;">
+                        ${data.output}
+                    </div>
+                    <div style="margin-top: 1rem; font-size: 0.8rem; color: #ffaa00;">
+                        <strong>Risk:</strong> ${data.vulnerability}
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 0.7rem; color: #cccccc;">
+                        <strong>Backend Response:</strong> ${data.message}
+                    </div>
+                `;
+                
+                this.utils.animateOutput(outputBox, vulnerableOutput);
+                
+                // Log the vulnerability
+                this.utils.logSecurityEvent('VULNERABLE_API_CALL', {
+                    input: input,
+                    hasXSS: this.utils.detectXSS(input),
+                    endpoint: '/api/xss/vulnerable'
+                });
+                
+                if (this.utils.detectXSS(input)) {
+                    this.utils.showAlert('🚨 XSS Attack Detected! Backend returned unsanitized data!', 'danger');
+                    outputBox.classList.add('alert-danger');
+                }
+            } else {
+                throw new Error(data.message || 'API request failed');
             }
-        }, 1000);
+            
+        } catch (error) {
+            console.error('API Error:', error);
+            this.utils.showAlert(`Backend Error: ${error.message}`, 'danger');
+            outputBox.innerHTML = `
+                <div style="color: #ff0040; padding: 1rem; background: rgba(255, 0, 64, 0.1); border-radius: 8px;">
+                    <strong>Connection Error:</strong> Could not connect to backend API.<br>
+                    <small>Make sure the server is running on port 3000</small>
+                </div>
+            `;
+        } finally {
+            this.utils.setLoading(document.querySelector('button[onclick="vulnerableSubmit()"]'), false);
+        }
     }
 
-    secureSubmit() {
+    async secureSubmit() {
         const input = this.secureInput.value;
         const outputBox = this.secureOutput;
         
@@ -182,48 +212,75 @@ class XSSDemo {
             return;
         }
 
-        // Simulate processing
+        // Show loading state
         this.utils.setLoading(document.querySelector('button[onclick="secureSubmit()"]'), true);
         
-        setTimeout(() => {
-            // SECURE: Sanitize input before rendering
-            const sanitizedInput = this.utils.sanitizeInput(input);
-            const hadXSS = this.utils.detectXSS(input);
-            
-            const secureOutput = `
-                <div style="margin-bottom: 1rem;">
-                    <strong style="color: #00ff88;">🛡️ SECURE OUTPUT:</strong>
-                </div>
-                <div style="background: rgba(0, 255, 136, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid #00ff88;">
-                    ${sanitizedInput}
-                </div>
-                <div style="margin-top: 1rem; font-size: 0.8rem; color: #00ff88;">
-                    <strong>Protection:</strong> Input was sanitized using HTML entity encoding and pattern filtering.
-                </div>
-                ${hadXSS ? `
-                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #ffaa00;">
-                    <strong>XSS Blocked:</strong> Malicious content was detected and neutralized.
-                </div>
-                ` : ''}
-            `;
-            
-            this.utils.animateOutput(outputBox, secureOutput);
-            this.utils.setLoading(document.querySelector('button[onclick="secureSubmit()"]'), false);
-            
-            // Log the secure processing
-            this.utils.logSecurityEvent('SECURE_INPUT_PROCESSED', {
-                originalInput: input,
-                sanitizedInput: sanitizedInput,
-                hadXSS: hadXSS
+        try {
+            // Make API call to secure endpoint
+            const response = await fetch('/api/xss/secure', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: input })
             });
             
-            if (hadXSS) {
-                this.utils.showAlert('✅ XSS Attack Blocked! Input was safely sanitized.', 'success');
-                outputBox.classList.add('status-secure');
+            const data = await response.json();
+            
+            if (data.success) {
+                // SECURE: Display sanitized data from backend
+                const secureOutput = `
+                    <div style="margin-bottom: 1rem;">
+                        <strong style="color: #00ff88;">🛡️ SECURE OUTPUT (from Backend API):</strong>
+                    </div>
+                    <div style="background: rgba(0, 255, 136, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid #00ff88;">
+                        ${data.sanitizedOutput}
+                    </div>
+                    <div style="margin-top: 1rem; font-size: 0.8rem; color: #00ff88;">
+                        <strong>Protection:</strong> ${data.security}
+                    </div>
+                    ${data.hadXSS ? `
+                    <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #ffaa00;">
+                        <strong>XSS Blocked:</strong> Malicious content was detected and neutralized by the backend.
+                    </div>
+                    ` : ''}
+                    <div style="margin-top: 0.5rem; font-size: 0.7rem; color: #cccccc;">
+                        <strong>Backend Response:</strong> ${data.message}
+                    </div>
+                `;
+                
+                this.utils.animateOutput(outputBox, secureOutput);
+                
+                // Log the secure processing
+                this.utils.logSecurityEvent('SECURE_API_CALL', {
+                    originalInput: input,
+                    sanitizedInput: data.sanitizedOutput,
+                    hadXSS: data.hadXSS,
+                    endpoint: '/api/xss/secure'
+                });
+                
+                if (data.hadXSS) {
+                    this.utils.showAlert('✅ XSS Attack Blocked by Backend! Input was safely sanitized.', 'success');
+                    outputBox.classList.add('status-secure');
+                } else {
+                    this.utils.showAlert('✅ Input processed securely by backend!', 'success');
+                }
             } else {
-                this.utils.showAlert('✅ Input processed securely!', 'success');
+                throw new Error(data.message || 'API request failed');
             }
-        }, 1000);
+            
+        } catch (error) {
+            console.error('API Error:', error);
+            this.utils.showAlert(`Backend Error: ${error.message}`, 'danger');
+            outputBox.innerHTML = `
+                <div style="color: #ff0040; padding: 1rem; background: rgba(255, 0, 64, 0.1); border-radius: 8px;">
+                    <strong>Connection Error:</strong> Could not connect to backend API.<br>
+                    <small>Make sure the server is running on port 3000</small>
+                </div>
+            `;
+        } finally {
+            this.utils.setLoading(document.querySelector('button[onclick="secureSubmit()"]'), false);
+        }
     }
 
     runDemo() {

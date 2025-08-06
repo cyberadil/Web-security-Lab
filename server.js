@@ -62,8 +62,9 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Static files - serve all demo frontend directories
-app.use(express.static(path.join(__dirname, '01-XSS-Demo Implementation/frontend')));
+// Static files - serve all demo frontend directories and root files
+app.use(express.static(path.join(__dirname)));
+app.use('/01-XSS-Demo Implementation', express.static(path.join(__dirname, '01-XSS-Demo Implementation')));
 app.use('/02-SQL-Injection-Demo Implementation', express.static(path.join(__dirname, '02-SQL-Injection-Demo Implementation')));
 app.use('/03-CSRF-Demo Implementation', express.static(path.join(__dirname, '03-CSRF-Demo Implementation')));
 app.use('/04-E-commerce-Security Implementation', express.static(path.join(__dirname, '04-E-commerce-Security Implementation')));
@@ -72,6 +73,21 @@ app.use('/05-Security-Dashboard Implementation', express.static(path.join(__dirn
 // Routes
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '01-XSS-Demo Implementation/frontend/index.html'));
+});
+
+// Demo hub route
+app.get('/demo-hub', (req, res) => {
+    res.sendFile(path.join(__dirname, 'start-demo.html'));
+});
+
+// Connection test route
+app.get('/test-connection', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test-connection.html'));
+});
+
+// Theme verification route
+app.get('/verify-theme', (req, res) => {
+    res.sendFile(path.join(__dirname, 'verify-theme.html'));
 });
 
 // API Routes

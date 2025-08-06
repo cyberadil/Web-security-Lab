@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Security Lab - Demo Hub</title>
+    <link rel="stylesheet" href="/shared/css/cyberpunk-theme.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;500&display=swap');
         
@@ -189,6 +190,241 @@
             border-radius: 8px;
             overflow-x: auto;
             margin: 1rem 0;
+        }
+        
+        /* ChatGPT Guide Section Styling */
+        .chatgpt-guide-section {
+            margin-top: 3rem;
+        }
+        
+        .guide-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(17, 17, 17, 0.9) 100%);
+            border: 1px solid var(--border-neon);
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .guide-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-neon), var(--primary-neon), var(--secondary-neon));
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .guide-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 128, 255, 0.2);
+            border-color: var(--accent-neon);
+        }
+        
+        .guide-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .guide-header h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--accent-neon), var(--primary-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .guide-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        
+        .guide-section {
+            margin-bottom: 3rem;
+        }
+        
+        .guide-section h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--primary-neon);
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+        
+        .guide-tips {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .tip-card {
+            display: flex;
+            gap: 1.5rem;
+            background: var(--bg-darker);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-neon);
+            transition: all 0.3s ease;
+        }
+        
+        .tip-card:hover {
+            border-color: var(--primary-neon);
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.1);
+        }
+        
+        .tip-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+        
+        .tip-content h4 {
+            color: var(--primary-neon);
+            margin-bottom: 0.5rem;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .tip-content p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .demo-prompts {
+            display: grid;
+            gap: 2rem;
+        }
+        
+        .prompt-category {
+            background: var(--bg-darker);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-neon);
+        }
+        
+        .prompt-category h4 {
+            font-family: 'Orbitron', monospace;
+            color: var(--accent-neon);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .prompt-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .prompt-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 10px;
+            border-left: 3px solid var(--primary-neon);
+        }
+        
+        .prompt-label {
+            font-weight: 600;
+            color: var(--primary-neon);
+            font-size: 0.9rem;
+        }
+        
+        .prompt-text {
+            color: var(--text-secondary);
+            font-style: italic;
+            line-height: 1.5;
+        }
+        
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .strategy-card {
+            background: var(--bg-darker);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-neon);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .strategy-card:hover {
+            border-color: var(--accent-neon);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 128, 255, 0.2);
+        }
+        
+        .strategy-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .strategy-card h4 {
+            font-family: 'Orbitron', monospace;
+            color: var(--accent-neon);
+            margin-bottom: 1rem;
+        }
+        
+        .strategy-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .guidelines {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .guideline-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-darker);
+            border-radius: 10px;
+            border: 1px solid var(--border-neon);
+        }
+        
+        .guideline-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .guideline-item span:last-child {
+            color: var(--text-secondary);
+        }
+        
+        .advanced-techniques {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .technique-item {
+            background: var(--bg-darker);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-neon);
+            border-left: 4px solid var(--secondary-neon);
+        }
+        
+        .technique-item h4 {
+            font-family: 'Orbitron', monospace;
+            color: var(--secondary-neon);
+            margin-bottom: 1rem;
+        }
+        
+        .technique-item p {
+            color: var(--text-secondary);
+            font-style: italic;
+            line-height: 1.6;
         }
         
         /* Professional Author Section Styling */
@@ -432,6 +668,31 @@
         
         /* Responsive Design */
         @media (max-width: 768px) {
+            .guide-header h2 {
+                font-size: 2rem;
+            }
+            
+            .guide-card {
+                padding: 2rem;
+            }
+            
+            .tip-card {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .strategy-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-prompts {
+                gap: 1.5rem;
+            }
+            
+            .prompt-category {
+                padding: 1.5rem;
+            }
+            
             .author-header {
                 flex-direction: column;
                 text-align: center;
@@ -588,6 +849,176 @@ node server.js
             </ul>
         </div>
         
+        <!-- ChatGPT Guide Section -->
+        <div class="chatgpt-guide-section">
+            <div class="guide-card">
+                <div class="guide-header">
+                    <h2>🤖 ChatGPT Learning Guide for Students</h2>
+                    <p>Maximize your learning experience with AI-powered assistance</p>
+                </div>
+                
+                <div class="guide-content">
+                    <div class="guide-section">
+                        <h3>🎯 How to Use ChatGPT Effectively for Web Security Learning</h3>
+                        <div class="guide-tips">
+                            <div class="tip-card">
+                                <div class="tip-icon">💡</div>
+                                <div class="tip-content">
+                                    <h4>Ask Specific Questions</h4>
+                                    <p>Instead of "What is XSS?", ask "Can you explain how reflected XSS works with a practical example and show me how to prevent it?"</p>
+                                </div>
+                            </div>
+                            
+                            <div class="tip-card">
+                                <div class="tip-icon">🔍</div>
+                                <div class="tip-content">
+                                    <h4>Request Code Analysis</h4>
+                                    <p>Share vulnerable code snippets and ask: "Can you identify the security vulnerabilities in this code and suggest fixes?"</p>
+                                </div>
+                            </div>
+                            
+                            <div class="tip-card">
+                                <div class="tip-icon">🛠️</div>
+                                <div class="tip-content">
+                                    <h4>Get Step-by-Step Explanations</h4>
+                                    <p>Ask for detailed breakdowns: "Walk me through the process of a SQL injection attack step by step"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="guide-section">
+                        <h3>📝 Sample Prompts for Each Demo</h3>
+                        
+                        <div class="demo-prompts">
+                            <div class="prompt-category">
+                                <h4>🔍 XSS Demo Prompts</h4>
+                                <div class="prompt-list">
+                                    <div class="prompt-item">
+                                        <span class="prompt-label">Understanding:</span>
+                                        <span class="prompt-text">"Explain the difference between stored, reflected, and DOM-based XSS with examples"</span>
+                                    </div>
+                                    <div class="prompt-item">
+                                        <span class="prompt-label">Code Review:</span>
+                                        <span class="prompt-text">"Review this JavaScript code for XSS vulnerabilities: [paste your code]"</span>
+                                    </div>
+                                    <div class="prompt-item">
+                                        <span class="prompt-label">Prevention:</span>
+                                        <span class="prompt-text">"Show me 5 different ways to prevent XSS attacks in modern web applications"</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="prompt-category">
+                                <h4>💉 SQL Injection Prompts</h4>
+                                <div class="prompt-list">
+                                    <div class="prompt-item">
+                                        <span class="prompt-label">Attack Vectors:</span>
+                                        <span class="prompt-text">"What are the most common SQL injection attack vectors and how do they work?"</span>
+                                    </div>
+                                    <div class="prompt-item">
+                                        <span class="prompt-label">Secure Coding:</span>
+                                        <span class="prompt-text">"Convert this vulnerable SQL query to use parameterized statements: [paste query]"</span>
+                                    </div>
+                                    <div class="prompt-item">
+                                        <span class="prompt-label">Testing:</span>
+                                        <span class="prompt-text">"How can I test my application for SQL injection vulnerabilities?"</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="prompt-category">
+                                <h4>🔄 CSRF Protection Prompts</h4>
+                                <div class="prompt-list">
+                                    <div class="prompt-item">
+                                        <span class="prompt-label">Concept:</span>
+                                        <span class="prompt-text">"Explain CSRF attacks with a real-world scenario and show how tokens prevent them"</span>
+                                    </div>
+                                    <div class="prompt-item">
+                                        <span class="prompt-label">Implementation:</span>
+                                        <span class="prompt-text">"Show me how to implement CSRF protection in Node.js/Express applications"</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="guide-section">
+                        <h3>🎓 Learning Strategies</h3>
+                        <div class="strategy-grid">
+                            <div class="strategy-card">
+                                <div class="strategy-icon">📚</div>
+                                <h4>Progressive Learning</h4>
+                                <p>Start with basic concepts, then ask for advanced scenarios and edge cases</p>
+                            </div>
+                            
+                            <div class="strategy-card">
+                                <div class="strategy-icon">🔬</div>
+                                <h4>Hands-on Practice</h4>
+                                <p>Ask ChatGPT to create practice exercises and vulnerable code for you to fix</p>
+                            </div>
+                            
+                            <div class="strategy-card">
+                                <div class="strategy-icon">🎯</div>
+                                <h4>Real-world Context</h4>
+                                <p>Request examples from actual applications and industry best practices</p>
+                            </div>
+                            
+                            <div class="strategy-card">
+                                <div class="strategy-icon">🔄</div>
+                                <h4>Iterative Learning</h4>
+                                <p>Follow up with "Can you explain this part in more detail?" or "What if...?" questions</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="guide-section">
+                        <h3>⚠️ Important Guidelines</h3>
+                        <div class="guidelines">
+                            <div class="guideline-item">
+                                <span class="guideline-icon">✅</span>
+                                <span>Always verify ChatGPT's suggestions with official documentation</span>
+                            </div>
+                            <div class="guideline-item">
+                                <span class="guideline-icon">✅</span>
+                                <span>Test security implementations in safe, controlled environments</span>
+                            </div>
+                            <div class="guideline-item">
+                                <span class="guideline-icon">✅</span>
+                                <span>Use ChatGPT to understand concepts, not as the sole source of truth</span>
+                            </div>
+                            <div class="guideline-item">
+                                <span class="guideline-icon">❌</span>
+                                <span>Never use AI-generated code in production without thorough review</span>
+                            </div>
+                            <div class="guideline-item">
+                                <span class="guideline-icon">❌</span>
+                                <span>Don't share sensitive or real production code with AI tools</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="guide-section">
+                        <h3>🚀 Advanced ChatGPT Techniques</h3>
+                        <div class="advanced-techniques">
+                            <div class="technique-item">
+                                <h4>Role-Playing Prompts</h4>
+                                <p>"Act as a security consultant reviewing my code. What vulnerabilities do you see?"</p>
+                            </div>
+                            <div class="technique-item">
+                                <h4>Comparative Analysis</h4>
+                                <p>"Compare the security implications of these two authentication methods..."</p>
+                            </div>
+                            <div class="technique-item">
+                                <h4>Scenario-Based Learning</h4>
+                                <p>"Create a scenario where an attacker exploits XSS in an e-commerce site"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="author-section">
             <div class="author-card">
                 <div class="author-header">
@@ -652,5 +1083,119 @@ node server.js
             </div>
         </div>
     </div>
+    
+    <!-- SecBot AI Assistant Integration -->
+    <script src="integrate-secbot.js"></script>
+    <script>
+        // Initialize SecBot when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🤖 Initializing SecBot AI Assistant...');
+            
+            // Determine the API URL based on the environment
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname;
+            const secBotApiUrl = isLocal 
+                ? 'http://localhost:3002' 
+                : 'https://your-deployed-secbot-api.com'; // <-- ⚠️ REPLACE WITH YOUR LIVE API URL
+
+            try {
+                const secBot = await integrateSecBot({
+                    apiUrl: secBotApiUrl,
+                    theme: 'dark',
+                    position: 'bottom-right'
+                });
+                
+                if (secBot.isReady()) {
+                    console.log('✅ SecBot is ready to help with web security questions!');
+                    
+                    // Add a subtle notification
+                    setTimeout(() => {
+                        const notification = document.createElement('div');
+                        notification.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: linear-gradient(45deg, #00ff88, #0080ff);
+                            color: #0a0a0a;
+                            padding: 1rem 1.5rem;
+                            border-radius: 12px;
+                            font-family: 'Orbitron', monospace;
+                            font-weight: 700;
+                            z-index: 1000;
+                            animation: slideIn 0.5s ease-out;
+                            cursor: pointer;
+                            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+                        `;
+                        notification.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🤖</span>
+                                <span>SecBot AI Assistant Ready!</span>
+                            </div>
+                            <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.25rem;">
+                                Click the chat button to ask security questions
+                            </div>
+                        `;
+                        
+                        // Add animation keyframes
+                        const style = document.createElement('style');
+                        style.textContent = `
+                            @keyframes slideIn {
+                                from { transform: translateX(100%); opacity: 0; }
+                                to { transform: translateX(0); opacity: 1; }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                        
+                        document.body.appendChild(notification);
+                        
+                        // Auto-hide notification
+                        notification.addEventListener('click', () => {
+                            notification.style.animation = 'slideIn 0.3s ease-out reverse';
+                            setTimeout(() => notification.remove(), 300);
+                        });
+                        
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                notification.style.animation = 'slideIn 0.3s ease-out reverse';
+                                setTimeout(() => notification.remove(), 300);
+                            }
+                        }, 5000);
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('❌ SecBot connection failed. Start the AI server with: cd ai-assistant && npm start', error);
+
+                // Add a visible error notification
+                const errorNotification = document.createElement('div');
+                errorNotification.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    left: 20px;
+                    background: linear-gradient(45deg, #ffaa00, #ff0040);
+                    color: #ffffff;
+                    padding: 1rem 1.5rem;
+                    border-radius: 12px;
+                    font-family: 'Orbitron', monospace;
+                    font-weight: 700;
+                    z-index: 1000;
+                    box-shadow: 0 4px 20px rgba(255, 0, 64, 0.3);
+                `;
+                errorNotification.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;"><span>🤖</span><span>SecBot AI Offline</span></div>
+                    <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.25rem; font-family: 'Roboto Mono', monospace;">
+                        Run <code>cd ai-assistant && npm start</code>
+                    </div>
+                `;
+                document.body.appendChild(errorNotification);
+            }
+        });
+        
+        // Listen for SecBot ready event
+        window.addEventListener('secbot-ready', (event) => {
+            console.log('🎉 SecBot integration complete!');
+            
+            // You can add custom logic here when SecBot is ready
+            // For example, pre-populate with security-related quick questions
+        });
+    </script>
 </body>
 </html> 
